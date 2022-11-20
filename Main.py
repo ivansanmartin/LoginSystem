@@ -1,5 +1,5 @@
 from RegisterAccount import Register
-from LoginAccount import UserLogin
+from LoginAccount import validate_entry
 from SQLConnect import Connect
 import hashlib
 
@@ -100,18 +100,28 @@ def register_new_user():
 
 
 def login_user_member():
-    login = UserLogin()
-    login.username = str(input('Nombre de usuario: '))
-    login.password_entry = str(input("Contrasena: "))
+    username = str(input("Ingrese su nombre de usuario: "))
+    password_entry = str(input("Ingrese su contrasena: "))
 
-    login.validate_entry()
+    result = hashlib.md5(password_entry.encode())
+    password_entry = result.hexdigest()
+
+    for i in validate_entry():
+        if i[0] == username and i[1] == password_entry:
+            print("Sesion iniciada")
+            menu_admin()
+            break
+        elif i[0] != username and i[1] != password_entry:
+            print("Contrasena o usuario incorrectos")
+            login_principal()
+            break
 
 
 def login_principal():
     options = ["1", "2"]
     print('''
 
-    \t Iniciando programa...
+    \t Menu principal...
 
     Por favor seleccione una opcion
     
