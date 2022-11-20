@@ -1,6 +1,7 @@
 from RegisterAccount import Register
 from LoginAccount import validate_entry
 from SQLConnect import Connect
+from Root import table_root, menu_root
 import hashlib
 
 cur = Connect()
@@ -117,8 +118,23 @@ def login_user_member():
             break
 
 
+def login_root():
+    root_username = str(input("root user: "))
+    root_password = str(input("root pass: "))
+
+    password = hashlib.md5(root_password.encode())
+    root_password = password.hexdigest()
+    for i in table_root():
+        if i[0] == root_username and i[1] == root_password:
+            print("Iniciado como usuario root.")
+            menu_root()
+
+        else:
+            login_principal()
+
+
 def login_principal():
-    options = ["1", "2"]
+    options = ["1", "2", "3"]
     print('''
 
     \t Menu principal...
@@ -127,6 +143,12 @@ def login_principal():
     
     1. Iniciar sesion
     2. Registrarme
+    
+    
+    
+    ----------------------
+    
+    3. root
 
 
     ''')
@@ -141,10 +163,12 @@ def login_principal():
         login_user_member()
     elif input_option == "2":
         register_new_user()
+    elif input_option == "3":
+        login_root()
 
 
 if __name__ == '__main__':
     # cur.execute("""INSERT INTO TYPE_USER (NOMBRE) VALUES ("Admin"), ("User")""")
     # create_table_users()
-    # create_table_type_user()
+    # create_table_type_user(
     login_principal()
