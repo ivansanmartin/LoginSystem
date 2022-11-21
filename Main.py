@@ -150,13 +150,8 @@ def login_user_member():
                     print("Sesion iniciada")
                     menu_admin()
                 else:
+                    print(i)
                     menu_usuario_normal(username)
-            break
-
-        elif i[0] != username and i[1] != password_entry:
-            print("Contrasena o usuario incorrectos")
-            login_principal()
-            break
     return username
 
 
