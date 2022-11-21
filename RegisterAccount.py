@@ -15,9 +15,6 @@ class Register:
     def entry_user_password(self):
         result = hashlib.md5(self.password.encode())
         print(result.hexdigest())
-        cursor.execute(
-            f"""INSERT INTO USUARIO (USERNAME, PASSWORD, TYPE_USER_ID) VALUES ('{self.username}', '{result.hexdigest()}', 1)""")
-        Connect.con.commit()
         cursor.close()
 
 

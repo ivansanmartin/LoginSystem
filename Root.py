@@ -1,6 +1,5 @@
 import hashlib
 from SQLConnect import Connect
-from LoginAccount import validate_entry  # obtener lista de usuarios y contrasenas
 
 cur = Connect()
 
@@ -35,50 +34,69 @@ def menu_root():
         option = str(input(": "))
 
     if option == "1":
-        changue_type()
+        change_type()
     elif option == "2":
         exit()
 
 
-def changue_type():
-    user_changue = str(input("Ingrese el nombre de usuario para cambiar el tipo: "))
-    options = ["1", "2"]
-    for i in validate_entry():
-        if i[0] != user_changue:
-            print("Has ingresado un usuario que no existe en el sistema.")
+def list_users():
+    sql = """SELECT username FROM USUARIO;"""
+    datos = cursor.execute(sql)
+    for user_list in datos.fetchall():
+        print(user_list[0])
 
-        elif i[0] == user_changue:
 
-            print("""
-            Ingrese el tipo de usuario que quiera establecer.
-            
-            (Admin | User)
-            
-            """)
+def change_type():
+    user_change = str(input("Ingrese el nombre de usuario para cambiar el tipo: "))
+    sql = """SELECT username FROM USUARIO;"""
+    datos = cursor.execute(sql)
 
-            type_user = str(input(": "))
-            if type_user == "Admin":
-                cursor.execute(f"""UPDATE USUARIO SET TYPE_USER_ID = 2 WHERE USERNAME = '{user_changue}';""")
-                Connect.con.commit()
-                print(f"El tipo de usuario de {user_changue} ha sido establecido como Admin")
-                menu_root()
-            elif type_user == "User":
-                cursor.execute(f"""UPDATE USUARIO SET TYPE_USER_ID = 1 WHERE USERNAME = '{user_changue}';""")
-                Connect.con.commit()
-                print(f"El tipo de usuario de {user_changue} ha sido establecido como User")
-                menu_root()
+    users_db = list()
 
+    for i in datos.fetchall():
+        users_db.append(i[0])
+
+    if user_change in users_db:
         print("""
-                  1. Ver lista de usuario
-                  2. Salir
-                  """)
-        view_users = str(input(": "))
 
-        while view_users not in options:
-            print("Has ingresado una opcion que no existe.")
-            view_users = str(input(": "))
+        Escriba el tipo de usuario que desea establecer
 
-        if view_users == "1":
-            for users in validate_entry():
-                print(users[0])
-            changue_type()
+        Admin | User
+
+        """)
+        print(users_db)
+        type_user = str(input(": "))
+
+        if type_user == "Admin":
+            sql = f"""UPDATE USUARIO SET TYPE_USER_ID = 1 WHERE USERNAME = '{user_change}'"""
+            cursor.execute(sql)
+            Connect.con.commit()
+            print(f"El usuario \"{user_change}\" ahora es administrador!")
+            menu_root()
+        elif type_user == "User":
+            sql = f"""UPDATE USUARIO SET TYPE_USER_ID = 2 WHERE USERNAME = '{user_change}'"""
+            cursor.execute(sql)
+            Connect.con.commit()
+            print(f"El usuario \"{user_change}\" ahora es usuario!")
+            menu_root()
+
+    elif user_change not in users_db:
+        print("""
+
+                    El usuario no ha sido encontrado!
+
+                    1. Ver lista de usuarios
+                    2. Logout
+
+
+
+                    """)
+        option = str(input(": "))
+
+        while option not in ["1", "2"]:
+            print("Opcion no valida (1 | 2)")
+            option = str(input(": "))
+
+        if option == "1":
+            list_users()
+            menu_root()

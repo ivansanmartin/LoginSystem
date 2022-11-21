@@ -2,6 +2,7 @@ from RegisterAccount import Register
 from LoginAccount import validate_entry
 from SQLConnect import Connect
 from Root import table_root, menu_root
+from Comments import create_comment
 import hashlib
 
 cur = Connect()
@@ -25,15 +26,12 @@ def create_table_type_user():
 def menu_admin():
     print(f"""
     
-    \t Has ingresado sesion como administrador.
+    \t Has iniciado sesion como administrador.
     
     \t Bienvenido...
-    
-    
     """)
 
     print("""
-
         \t1. Ver lista de usuarios.
         \t2. Ver lista de comentarios.
 
@@ -42,26 +40,45 @@ def menu_admin():
     option = str(input("Ingrese una opcion: "))
 
 
-def menu_usuario_normal():
+def menu_usuario_normal(username):
     print(f"""
 
         \t Has ingresado sesion como usuario.
 
-        \t Bienvenido...
+        \t Bienvenido {username}...
 
 
         """)
+    # Obtener id de usuario.
+
+    sql = f"""SELECT id FROM USUARIO WHERE username = '{username}'"""
+    cur.execute(sql)
+
+    datos = cur.fetchall()
+
+    user_id = 0
+    for user_extract_id in datos:
+        user_id = user_extract_id[0]
 
     # Opciones
 
     print("""
     
-    \t1. Ver mis comentarios.
-    \t2. Hacer comentario.
+    \t1. Hacer comentario.
+    \t2. Ver mis comentarios.
     
     """)
 
     option = str(input("Ingrese una opcion: "))
+
+    while option not in ["1", "2"]:
+        print("Has ingresado una opcion que no existe, vuelve a intentarlo")
+        option = str(input("Ingrese una opcion: "))
+
+    if option == "1":
+        comment = str(input("Escribe el comentario: "))
+
+        create_comment(comment, user_id)
 
 
 def register_new_user():
@@ -107,15 +124,27 @@ def login_user_member():
     result = hashlib.md5(password_entry.encode())
     password_entry = result.hexdigest()
 
+    # Obtener tabla usuario
+    sql = f"SELECT * FROM USUARIO WHERE USERNAME == '{username}'"
+    cur.execute(sql)
+
+    datos = cur.fetchall()
+
     for i in validate_entry():
         if i[0] == username and i[1] == password_entry:
-            print("Sesion iniciada")
-            menu_admin()
+            for user in datos:
+                if user[3] == 1:
+                    print("Sesion iniciada")
+                    menu_admin()
+                else:
+                    menu_usuario_normal(username)
             break
+
         elif i[0] != username and i[1] != password_entry:
             print("Contrasena o usuario incorrectos")
             login_principal()
             break
+    return username
 
 
 def login_root():
