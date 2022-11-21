@@ -2,7 +2,7 @@ from RegisterAccount import Register
 from LoginAccount import validate_entry
 from SQLConnect import Connect
 from Root import table_root, menu_root
-from Comments import create_comment
+from Comments import create_comment, view_comments
 import hashlib
 
 cur = Connect()
@@ -26,7 +26,7 @@ def create_table_type_user():
 def menu_admin():
     print(f"""
     
-    \t Has iniciado sesion como administrador.
+    \t Admin menu.
     
     \t Bienvenido...
     """)
@@ -43,11 +43,9 @@ def menu_admin():
 def menu_usuario_normal(username):
     print(f"""
 
-        \t Has ingresado sesion como usuario.
+        \t User menu.
 
         \t Bienvenido {username}...
-
-
         """)
     # Obtener id de usuario.
 
@@ -63,22 +61,37 @@ def menu_usuario_normal(username):
     # Opciones
 
     print("""
-    
     \t1. Hacer comentario.
     \t2. Ver mis comentarios.
+    \t3. Logout.
     
     """)
 
-    option = str(input("Ingrese una opcion: "))
+    option = str(input("Ingrese una opcion: \n"))
 
-    while option not in ["1", "2"]:
+    while option not in ["1", "2", "3"]:
         print("Has ingresado una opcion que no existe, vuelve a intentarlo")
         option = str(input("Ingrese una opcion: "))
 
     if option == "1":
         comment = str(input("Escribe el comentario: "))
-
+        print("\nHas hecho un comentario correctamente\n.")
         create_comment(comment, user_id)
+        menu_usuario_normal(username)
+
+    elif option == "2":
+        view_comments(user_id)
+
+        print("\n1. Volver atras\n")
+        back = str(input(": "))
+
+        while back not in ["1"]:
+            print("Ingresa una opcion correcta.\n")
+            back = str(input(": "))
+        if back == "1":
+            menu_usuario_normal(username)
+    elif option == "3":
+        login_principal()
 
 
 def register_new_user():
