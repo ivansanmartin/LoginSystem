@@ -123,7 +123,7 @@ def register_new_user():
     # Validar si existe o no algun caracter en mayuscula.
 
     for i in range(0, len(register.password)):
-        if register.password[0].islower():
+        if register.password[i].islower():
             print("ERROR! Debes tener al menos un caracterer en mayuscula")
             register.password = str(input("Ingrese su contrasena nuevamente: "))
             register.password_confirm = str(input("Confirme contrasena: "))
@@ -152,6 +152,11 @@ def login_user_member():
                 else:
                     print(i)
                     menu_usuario_normal(username)
+
+    for i in validate_entry():
+        if username != i[0] or password_entry != i[1]:
+            print("Contrasena incorrecta. \n")
+            login_principal()
     return username
 
 
